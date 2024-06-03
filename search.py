@@ -139,16 +139,33 @@ def uniform_cost_search(problem):
     """
     # "*** YOUR CODE HERE ***"
     # util.raiseNotDefined()
+    return a_star_search(problem)
+
+
+def null_heuristic(state, problem=None):
+    """
+    A heuristic function estimates the cost from the current state to the nearest
+    goal in the provided SearchProblem.  This heuristic is trivial.
+    """
+    return 0
+
+
+def a_star_search(problem, heuristic=null_heuristic):
+    """
+    Search the node that has the lowest combined cost and heuristic first.
+    """
+    # "*** YOUR CODE HERE ***"
+    # util.raiseNotDefined()
     node = problem.get_start_state()
     if problem.is_goal_state(node):
         return []
 
     # The priority queue wil consist of data=(node, path_to_node) priority=(action_cost, entry_time)
     frontier = PriorityQueue()
-    path_to_goal = None # Represents the solution to a goal.
+    path_to_goal = None  # Represents the solution to a goal.
     min_cost_to_goal = 0
     action_cost = 0
-    solution = []   # Represents a path to a node
+    solution = []  # Represents a path to a node
     # This variable is used for the priority queue.
     # If two nodes have the same action cost, the priority queue will enter
     # the node according to the first node it saw.
@@ -158,9 +175,9 @@ def uniform_cost_search(problem):
 
     while not frontier.isEmpty():
         # Get the smallest cost node:
-        node, action = frontier.pop()   # Pops the smallest priority.
+        node, action = frontier.pop()  # Pops the smallest priority.
         path_to_node = solution + action
-        path_cost = problem.get_cost_of_actions(path_to_node)
+        path_cost = problem.get_cost_of_actions(path_to_node) + heuristic(node, problem)
 
         if problem.is_goal_state(node):
             # Check if the path to this goal is better:
@@ -180,22 +197,6 @@ def uniform_cost_search(problem):
                 frontier.push((successor[0], path_to_node + [successor[1]]), (path_cost + successor[2], entry_time))
 
     return path_to_goal if path_to_goal is not None else None
-
-
-def null_heuristic(state, problem=None):
-    """
-    A heuristic function estimates the cost from the current state to the nearest
-    goal in the provided SearchProblem.  This heuristic is trivial.
-    """
-    return 0
-
-
-def a_star_search(problem, heuristic=null_heuristic):
-    """
-    Search the node that has the lowest combined cost and heuristic first.
-    """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
 
 
 # Abbreviations
