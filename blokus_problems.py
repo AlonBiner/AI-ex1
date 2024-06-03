@@ -99,13 +99,6 @@ class BlokusCornersProblem(SearchProblem):
         return action_sum
 
 
-def get_manhattan_dist(corner, locations):
-    legal_moves_dist = []
-    for location in locations:
-        legal_moves_dist.append(manhattanDistance(corner, location) + 1)
-    return min(legal_moves_dist)
-
-
 def blokus_corners_heuristic(state, problem):
     """
     Your heuristic for the BlokusCornersProblem goes here.
@@ -120,34 +113,26 @@ def blokus_corners_heuristic(state, problem):
     """
     # "*** YOUR CODE HERE ***"
     # util.raiseNotDefined()
-    heuristic_total = 0
-    corners = [(0, 0),
-               (0, problem.board.board_w - 1),
-               (problem.board.board_h - 1, 0),
-               (problem.board.board_h - 1, problem.board.board_w - 1)]
-    legal_tiles_placements = get_legal_location_placements(state)
-    if not legal_tiles_placements:
-        return problem.board.board_w * problem.board.board_h
-    for corner in corners:
-        if state.get_position(corner[0], corner[1]) == -1:
-            heuristic_total += get_manhattan_dist(corner, legal_tiles_placements)
-    return heuristic_total
+    corners = [(0, 0), (0, state.state.shape[1] - 1), (state.state.shape[0] - 1, 0), (state.state.shape[0] - 1, state.state.shape[1] - 1)]
+    available_corners = [corner for corner in corners if state.state[corner[0]][corner[1]] == -1]
 
+    legal_moves = [move for move in state.get_legal_moves(0)]
 
-def get_legal_location_placements(state):
-    legal_tiles = []
-    for row in range(state.board_h):
-        for col in range(state.board_w):
-            if state.check_tile_legal(0, row, col) and state.check_tile_attached(0, row, col):
-                legal_tiles.append((row, col))
-    return legal_tiles
+    minDist = float('inf')
+    for move in legal_moves:
+        totalDistance = 0
+        for corner in available_corners:
+            totalDistance += (manhattanDistance((move.x, move.y), corner) + 1)
+            # distances.append(manhattanDistance(move, corner))
+        minDist = min(totalDistance, minDist)
+    return minDist
 
 
 class BlokusCoverProblem(SearchProblem):
     def __init__(self, board_w, board_h, piece_list, starting_point=(0, 0), targets=[(0, 0)]):
         self.targets = targets.copy()
         self.expanded = 0
-        "*** YOUR CODE HERE ***"
+        self.board = Board(board_w, board_h, 1, piece_list, starting_point)
 
     def get_start_state(self):
         """
@@ -157,7 +142,10 @@ class BlokusCoverProblem(SearchProblem):
 
     def is_goal_state(self, state):
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        for target in self.targets:
+            if state.get_position(target[0], target[1]) == -1:
+                return False
+        return True
 
     def get_successors(self, state):
         """
@@ -180,8 +168,10 @@ class BlokusCoverProblem(SearchProblem):
         This method returns the total cost of a particular sequence of actions.  The sequence must
         be composed of legal moves
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        action_sum = 0
+        for action in actions:
+            action_sum += action.piece.get_num_tiles()
+        return action_sum
 
 
 def blokus_cover_heuristic(state, problem):
