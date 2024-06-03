@@ -170,7 +170,7 @@ def a_star_search(problem, heuristic=null_heuristic):
     # If two nodes have the same action cost, the priority queue will enter
     # the node according to the first node it saw.
     entry_time = 0
-    frontier.push((node, solution), (action_cost, entry_time))
+    frontier.push((node, solution), (action_cost + heuristic(node, problem), entry_time))
     reached = set()
 
     while not frontier.isEmpty():

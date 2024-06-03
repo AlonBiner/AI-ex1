@@ -1,6 +1,7 @@
 from board import Board
 from search import SearchProblem, ucs
 import util
+from util import manhattanDistance
 
 
 class BlokusFillProblem(SearchProblem):
@@ -98,6 +99,13 @@ class BlokusCornersProblem(SearchProblem):
         return action_sum
 
 
+def get_manhattan_dist(corner, locations):
+    legal_moves_dist = []
+    for location in locations:
+        legal_moves_dist.append(manhattanDistance(corner, location) + 1)
+    return min(legal_moves_dist)
+
+
 def blokus_corners_heuristic(state, problem):
     """
     Your heuristic for the BlokusCornersProblem goes here.
@@ -110,8 +118,29 @@ def blokus_corners_heuristic(state, problem):
     your heuristic is *not* consistent, and probably not admissible!  On the other hand,
     inadmissible or inconsistent heuristics may find optimal solutions, so be careful.
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # "*** YOUR CODE HERE ***"
+    # util.raiseNotDefined()
+    heuristic_total = 0
+    corners = [(0, 0),
+               (0, problem.board.board_w - 1),
+               (problem.board.board_h - 1, 0),
+               (problem.board.board_h - 1, problem.board.board_w - 1)]
+    legal_tiles_placements = get_legal_location_placements(state)
+    if not legal_tiles_placements:
+        return problem.board.board_w * problem.board.board_h
+    for corner in corners:
+        if state.get_position(corner[0], corner[1]) == -1:
+            heuristic_total += get_manhattan_dist(corner, legal_tiles_placements)
+    return heuristic_total
+
+
+def get_legal_location_placements(state):
+    legal_tiles = []
+    for row in range(state.board_h):
+        for col in range(state.board_w):
+            if state.check_tile_legal(0, row, col) and state.check_tile_attached(0, row, col):
+                legal_tiles.append((row, col))
+    return legal_tiles
 
 
 class BlokusCoverProblem(SearchProblem):
