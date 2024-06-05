@@ -125,32 +125,14 @@ def blokus_corners_heuristic(state, problem):
                (0, problem.board.board_w - 1),
                (problem.board.board_h - 1, 0),
                (problem.board.board_h - 1, problem.board.board_w - 1)]
-    # for corner in corners:
-    #     if state.get_position(corner[0], corner[1]) == -1:
-    #         heuristic_total += 1
-    # return heuristic_total
 
     legal_tiles_placements = get_legal_location_placements(state)
     if not legal_tiles_placements:
         return problem.board.board_w * problem.board.board_h
     for corner in corners:
-        if state.get_position(corner[0], corner[1]) == -1:
+        if state.get_position(corner[1], corner[0]) == -1:
             heuristic_total += get_manhattan_dist(corner, legal_tiles_placements)
     return heuristic_total
-
-    # corners = [(0, 0), (0, state.state.shape[1] - 1), (state.state.shape[0] - 1, 0), (state.state.shape[0] - 1, state.state.shape[1] - 1)]
-    # available_corners = [corner for corner in corners if state.state[corner[0]][corner[1]] == -1]
-    #
-    # legal_moves = [move for move in state.get_legal_moves(0)]
-    #
-    # minDist = float('inf')
-    # for move in legal_moves:
-    #     totalDistance = 0
-    #     for corner in available_corners:
-    #         totalDistance += (manhattanDistance((move.x, move.y), corner) + 1)
-    #         # distances.append(manhattanDistance(move, corner))
-    #     minDist = min(totalDistance, minDist)
-    # return minDist
 
 
 def get_legal_location_placements(state):
@@ -177,7 +159,7 @@ class BlokusCoverProblem(SearchProblem):
     def is_goal_state(self, state):
         "*** YOUR CODE HERE ***"
         for target in self.targets:
-            if state.get_position(target[0], target[1]) == -1:
+            if state.get_position(target[1], target[0]) == -1:
                 return False
         return True
 
@@ -216,6 +198,6 @@ def blokus_cover_heuristic(state, problem):
     if not legal_tiles_placements:
         return problem.board.board_w * problem.board.board_h
     for target in problem.targets:
-        if state.get_position(target[0], target[1]) == -1:
+        if state.get_position(target[1], target[0]) == -1:
             heuristic_total += get_manhattan_dist(target, legal_tiles_placements)
     return heuristic_total
